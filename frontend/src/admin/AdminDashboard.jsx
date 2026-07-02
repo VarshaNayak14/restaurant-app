@@ -8,7 +8,7 @@ import { fetchDishes } from '../data/dishes.js'
 import { useAuth } from '../context/AuthContext.jsx'
 import './AdminDashboard.css'
 
-const API = 'http://localhost:5000/api'
+const API = 'https://restaurant-app-djtk.onrender.com/api'
 
 const WEEK_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 

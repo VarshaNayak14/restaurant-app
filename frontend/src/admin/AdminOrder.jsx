@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const API = 'http://localhost:5000/api'
+const API = 'https://restaurant-app-djtk.onrender.com/api'
 
 const STATUS_META = {
   confirmed:        { label: 'Confirmed',        color: '#3b82f6', bg: '#eff6ff', icon: <CheckCircle2 size={13}/> },
