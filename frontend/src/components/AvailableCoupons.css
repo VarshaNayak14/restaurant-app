@@ -1,0 +1,99 @@
+.avail-coupons {
+  margin-bottom: 20px;
+}
+.avail-coupons-boxed {
+  background: var(--bg-card);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.avail-coupons-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-heading);
+  margin-bottom: 10px;
+}
+.avail-coupons-head svg { color: var(--primary); }
+
+.avail-coupons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avail-coupon-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1.5px dashed var(--primary);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.avail-coupon-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.avail-coupon-discount {
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--primary-dark);
+}
+.avail-coupon-desc {
+  font-size: 0.76rem;
+  color: var(--text-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avail-coupon-copy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-warm);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+}
+.avail-coupon-copy:hover {
+  background: rgba(201,149,42,0.10);
+  border-color: var(--primary);
+}
+.avail-coupon-code {
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: var(--text-heading);
+}
+.avail-coupon-copy svg { color: var(--primary); flex-shrink: 0; }
+
+/* Compact variant — used inside dark checkout sidebar */
+.avail-coupons-compact .avail-coupon-card {
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+.avail-coupons-compact .avail-coupon-discount { font-size: 0.8rem; }
+.avail-coupons-compact .avail-coupon-desc { font-size: 0.7rem; }
+.avail-coupons-compact .avail-coupon-code { font-size: 0.74rem; }
+
+.avail-coupons-footnote {
+  font-size: 0.72rem;
+  color: var(--text-light);
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .avail-coupon-card { flex-direction: column; align-items: stretch; }
+  .avail-coupon-copy { justify-content: center; }
+}

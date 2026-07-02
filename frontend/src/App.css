@@ -1,0 +1,32 @@
+/* App-level shared styles — component-level styles live in their own CSS files */
+
+/* ── Image Card Shared ─────────────────────────────────────── */
+.dish-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── Spice Pips ────────────────────────────────────────────── */
+.spice-pips { display:flex; gap:3px; align-items:center; }
+.spice-pip  {
+  width:8px; height:8px; border-radius:50%;
+  background: var(--border);
+  transition: background var(--transition);
+}
+.spice-pip.hot { background: #E63946; }
+
+/* ── Tag Badges ────────────────────────────────────────────── */
+.tag-veg     { color:#27ae60; background:rgba(39,174,96,.1);  }
+.tag-nonveg  { color:#E63946; background:rgba(230,57,70,.1);  }
+.type-tag {
+  display:inline-flex; align-items:center; gap:4px;
+  padding: 3px 10px;
+  border-radius:99px;
+  font-size:.72rem; font-weight:700;
+}
+
+/* ── Section Divider ───────────────────────────────────────── */
+.wavy-divider svg { display:block; width:100%; }

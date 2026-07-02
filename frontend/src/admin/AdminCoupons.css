@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════
+   ADMIN — Coupon Codes
+═══════════════════════════════════════════ */
+
+.coupon-desc-sub {
+  font-size: .72rem;
+  color: #8a8f98;
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.coupon-picker-hint {
+  font-size: .76rem;
+  color: #8a8f98;
+  margin: -2px 0 8px;
+}
+
+.coupon-picker-count {
+  font-size: .76rem;
+  color: #C9952A;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
+
+.coupon-dish-tag {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  background: rgba(201,149,42,.12);
+  color: #C9952A;
+}
+.coupon-dish-tag-all {
+  background: rgba(107,114,128,.12);
+  color: #6b7280;
+}
+
+/* Reuse the same status pill look as Flash Offers */
+.admin-coupons .offer-status {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.admin-coupons .offer-status-live     { background: rgba(22,163,74,.12);  color: #16a34a; }
+.admin-coupons .offer-status-expired  { background: rgba(107,114,128,.12); color: #6b7280; }
+.admin-coupons .offer-status-off      { background: rgba(220,38,38,.12);  color: #dc2626; }
+
+/* ═══════════════════════════════════════════
+   Applicable-dishes picker
+   (was missing — this page only imported
+   AdminDishes.css, not AdminOffers.css)
+═══════════════════════════════════════════ */
+.offer-dish-picker {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+.offer-dish-row {
+  border-bottom: 1px solid #eef0f2;
+  padding: 8px 10px;
+  transition: background .15s;
+}
+.offer-dish-row:last-child { border-bottom: none; }
+.offer-dish-row.checked { background: rgba(201,149,42,.08); }
+
+.offer-dish-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  min-width: 0;
+}
+.offer-dish-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #C9952A;
+  flex-shrink: 0;
+}
+.offer-dish-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.offer-dish-info {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.offer-dish-name {
+  font-size: .83rem;
+  font-weight: 600;
+  color: #0f1923;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.offer-dish-price {
+  font-size: .74rem;
+  color: #8a8f98;
+  flex-shrink: 0;
+}
+
+/* ── Mobile hardening ── */
+@media (max-width: 640px) {
+  .offer-dish-picker { max-height: 260px; }
+  .offer-dish-info { flex-direction: column; align-items: flex-start; gap: 0; }
+}
+
+@media (max-width: 540px) {
+  .admin-coupons .dishes-table th:nth-child(4),
+  .admin-coupons .dishes-table td:nth-child(4) { display: none; } /* Min Order col */
+  .admin-coupons .dishes-table { min-width: 420px; font-size: .78rem; }
+}
+
+@media (max-width: 400px) {
+  .admin-coupons .dishes-table th:nth-child(3),
+  .admin-coupons .dishes-table td:nth-child(3) { display: none; } /* Applies To col */
+  .admin-coupons .dishes-table { min-width: 340px; }
+}
