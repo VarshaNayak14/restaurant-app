@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useAuth } from './AuthContext.jsx'
 
 const WishlistContext = createContext(null)
-const API = 'https://restaurant-app-djtk.onrender.com/api'
+const API = 'https://restaurant-app-1-4jis.onrender.com//api'
 
 export function WishlistProvider({ children }) {
   const { user, getToken } = useAuth()
