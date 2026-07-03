@@ -49,6 +49,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: 'Something went wrong on the server.' })
 })
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "HungryHub Backend is Running 🚀"
+  });
+});
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
