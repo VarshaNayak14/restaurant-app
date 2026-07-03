@@ -230,7 +230,7 @@ function tplCancelled({ name, date, guests, adminNote }) {
       <p style="margin:0 0 10px;color:#374151;font-size:.88rem;">
         We'd love to have you again! You can make a new reservation anytime.
       </p>
-      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/contact"
+      <a href="${process.env.FRONTEND_URL || 'https://restouranthungryhub.netlify.app'}/contact"
         style="display:inline-block;background:${GOLD};color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.85rem;">
         Book Again →
       </a>
@@ -266,7 +266,7 @@ function tplAdminNewReservation({ name, email, phone, date, guests, message, res
     </table>
 
     <div style="text-align:center;">
-      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/reservations"
+      <a href="${process.env.FRONTEND_URL || 'https://restouranthungryhub.netlify.app'}/admin/reservations"
         style="display:inline-block;background:${GOLD};color:#fff;padding:11px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem;letter-spacing:.3px;">
         Open Admin Panel →
       </a>

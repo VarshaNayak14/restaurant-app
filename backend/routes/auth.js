@@ -212,7 +212,7 @@ router.post('/forgot-password', async (req, res) => {
     await user.save({ validateBeforeSave: false })
 
     // Build reset URL — frontend will handle this route
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${rawToken}`
+    const resetUrl = `${process.env.FRONTEND_URL || 'https://restouranthungryhub.netlify.app'}/reset-password/${rawToken}`
 
     const sent = await sendMail({
       to: user.email,
