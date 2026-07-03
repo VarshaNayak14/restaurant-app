@@ -20,7 +20,7 @@ const app  = express()
 const PORT = process.env.PORT || 5000
 
 app.use(cors({
-  origin: ['https://restouranthungryhub.netlify.app', 'https://restaurant-app-snowy-three.vercel.app/'],
+  origin: ['https://restaurant-app-snowy-three.vercel.app', 'https://restaurant-app-djxk.onrender.com'],
   credentials: true,
 }))
 app.use(express.json({ limit: '10mb' }))
