@@ -4,7 +4,7 @@ import { User, Package, LogOut, Star, MapPin, Clock, Loader2, X, CheckCircle2, C
 import { useAuth } from '../context/AuthContext.jsx'
 import './Profile.css'
 
-const API = 'https://restaurant-app-djxk.onrender.com/api'
+const API = 'https://restaurant-app-djxk.onrender.com'
 
 const RATING_LABELS = ['Very Bad', 'Bad', 'Ok-Ok', 'Good', 'Very Good']
 const RATING_MSG = {

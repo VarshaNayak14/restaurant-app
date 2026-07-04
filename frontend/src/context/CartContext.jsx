@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth } from './AuthContext.jsx'
 
 const CartContext = createContext(null)
-const API = 'https://restaurant-app-djxk.onrender.com/api'
+const API = 'https://restaurant-app-djxk.onrender.com'
 
 export function CartProvider({ children }) {
   const { user, getToken } = useAuth()
