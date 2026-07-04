@@ -1,4 +1,4 @@
-export const API_BASE = 'https://restaurant-app-1-4jis.onrender.com/api'
+export const API_BASE = 'https://restaurant-app-djxk.onrender.com/api'
 
 export const categories = ['All', 'Starters', 'Main Course', 'Rice & Biryani', 'Breads', 'Desserts', 'Drinks']
 

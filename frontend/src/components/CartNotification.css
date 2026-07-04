@@ -1,7 +1,8 @@
 .cart-notif {
-  position:fixed; bottom:32px; right:32px; z-index:9999;
+  position:fixed; bottom:110px; right:24px; z-index:9999;
   display:flex; align-items:center; gap:10px;
   padding:14px 22px;
+  max-width: min(340px, calc(100vw - 32px));
   background:#fff; border-radius:var(--radius);
   box-shadow:var(--shadow-lg);
   border-left:4px solid var(--primary);
@@ -11,3 +12,14 @@
 }
 .cart-notif.show { transform:translateX(0) scale(1); opacity:1; }
 .notif-icon { color:var(--primary); flex-shrink:0; }
+.cart-notif span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Mobile — avoid overlapping the social-float button, use full width */
+@media (max-width: 480px) {
+  .cart-notif {
+    bottom: 90px; right: 12px; left: 12px;
+    max-width: none;
+    padding: 12px 16px;
+    font-size: .85rem;
+  }
+}

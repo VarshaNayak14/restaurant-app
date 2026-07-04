@@ -1,0 +1,24 @@
+/* ── Order detail expanded grid ──────────────────────────────────
+   Was inline `gridTemplateColumns: repeat(auto-fit, minmax(240px, 1fr))`.
+   On very narrow screens (< ~500px) the 240px minimum doesn't fit,
+   which forced the grid (and the text inside it) to overflow
+   horizontally — address lines got clipped instead of wrapping.
+   Below 500px we force a single column so everything wraps normally. */
+.order-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.order-detail-grid p,
+.order-detail-grid div {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+@media (max-width: 500px) {
+  .order-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -272,18 +272,18 @@
   .kpi-icon  { width: 40px; height: 40px; }
   .dash-title { font-size: 1.3rem; }
 
-  /* hide less-important table columns */
-  .orders-table .order-items  { display: none; }
-  .orders-table th:nth-child(3),
-  .orders-table td:nth-child(3) { display: none; }
-
-  .orders-table { font-size: .72rem; }
-  .orders-table th, .orders-table td { padding: 8px 6px; }
-
   /* bar chart shrinks gracefully */
   .bar-chart { height: 80px; gap: 4px; }
   .bar-label { font-size: .58rem; }
   .chart-total-val { font-size: 1.2rem; }
+
+  /* Orders table: keep it a real table, just scroll it sideways */
+  .orders-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .orders-table { font-size: .74rem; min-width: 560px; }
+  .orders-table th, .orders-table td { padding: 8px 8px; }
 }
 
 /* Small phones */
@@ -291,13 +291,37 @@
   .kpi-grid { grid-template-columns: 1fr; }
   .kpi-card { padding: 14px; gap: 12px; }
 
-  /* orders table: keep only ID, customer, status */
-  .orders-table th:nth-child(4),
-  .orders-table td:nth-child(4),
-  .orders-table th:nth-child(6),
-  .orders-table td:nth-child(6) { display: none; }
-
   .dash-date { display: none; }
 
   .donut-wrap { flex-direction: column; }
+}
+
+/* Ultra-narrow (small phones in split-screen, embedded webviews — down to ~200px) */
+@media (max-width: 340px) {
+  .admin-dashboard { gap: 16px; }
+  .dash-title { font-size: 1.1rem; }
+  .dash-sub   { font-size: .78rem; }
+
+  .dash-card { padding: 14px; }
+
+  .kpi-card  { padding: 12px; gap: 10px; }
+  .kpi-icon  { width: 34px; height: 34px; }
+  .kpi-icon svg { width: 18px; height: 18px; }
+  .kpi-value { font-size: 1.05rem; }
+  .kpi-label { font-size: .68rem; }
+  .kpi-change{ font-size: .65rem; flex-wrap: wrap; }
+
+  .card-title { font-size: .85rem; }
+  .card-badge { font-size: .62rem; padding: 3px 8px; }
+
+  .chart-total-val { font-size: 1.05rem; }
+  .bar-chart { height: 64px; }
+
+  .donut-svg { width: 100px; height: 100px; }
+
+  .menu-stat-number { font-size: 1.6rem; }
+  .menu-stat-pills  { flex-wrap: wrap; }
+
+  .orders-table { min-width: 460px; font-size: .7rem; }
+  .top-dish-name { font-size: .76rem; }
 }

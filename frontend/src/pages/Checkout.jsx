@@ -8,7 +8,7 @@ import { API_BASE } from '../data/dishes.js'
 import AvailableCoupons from '../components/AvailableCoupons.jsx'
 import './Checkout.css'
 
-const API   = 'https://restaurant-app-1-4jis.onrender.com/api'
+const API   = 'https://restaurant-app-djxk.onrender.com/api'
 const STEPS = ['Delivery', 'Payment', 'Confirm']
 
 /* ─── load Razorpay script once ─── */

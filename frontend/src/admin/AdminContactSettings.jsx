@@ -169,7 +169,7 @@ export default function AdminContactSettings() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(340px,1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(340px,100%),1fr))', gap: 20 }}>
 
         {/* ── Location Card ── */}
         <div className="dash-card">
@@ -226,7 +226,7 @@ export default function AdminContactSettings() {
         {/* ── Map / Image Section ── */}
         <div className="dash-card" style={{ gridColumn: '1 / -1' }}>
           <SectionHead icon={<Map size={18} />} title="Map & Location Section" subtitle="The image/map shown beside the reservation form" />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(280px,100%),1fr))', gap: 20 }}>
 
             {/* Left: image settings */}
             <div className="add-home-form">

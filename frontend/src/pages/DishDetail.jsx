@@ -10,7 +10,7 @@ import { useCart } from '../context/CartContext.jsx'
 import { useWishlist } from '../context/WishlistContext.jsx'
 import './DishDetail.css'
 
-const API = 'https://restaurant-app-1-4jis.onrender.com/api'
+const API = 'https://restaurant-app-djxk.onrender.com/api'
 
 const spiceInfo = {
   0: { label: 'No Spice', color: '#10b981', bg: 'rgba(16,185,129,.12)' },

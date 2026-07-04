@@ -12,6 +12,10 @@
   gap: 22px;
   align-items: start;
 }
+/* Prevent the table's min-width from blowing out the grid track / page.
+   Without this, grid items default to min-width:auto and force the whole
+   page to overflow horizontally instead of just the table scrolling. */
+.dishes-layout > .dash-card { min-width: 0; }
 
 .dash-card {
   background: #fff;
@@ -215,7 +219,7 @@
 }
 
 /* ── Dishes Table ── */
-.dishes-table-wrap { overflow-x: auto; max-height: 640px; overflow-y: auto; }
+.dishes-table-wrap { overflow-x: auto; }
 
 .dishes-table { width: 100%; border-collapse: collapse; font-size: .85rem; min-width: 520px; }
 .dishes-table thead th {
@@ -343,7 +347,6 @@
 /* Stack form above table on smaller screens */
 @media (max-width: 1100px) {
   .dishes-layout { grid-template-columns: 1fr; }
-  .dishes-table-wrap { max-height: 480px; }
 }
 
 /* Tablet */
