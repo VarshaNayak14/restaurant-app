@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 
 const AuthContext = createContext(null)
 
-const API = 'https://restaurant-app-djxk.onrender.com'
+const API = 'https://restaurant-app-djxk.onrender.com/api'
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null)
