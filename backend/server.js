@@ -25,9 +25,13 @@ const User               = require('./models/User')
 
 const app  = express()
 const PORT = process.env.PORT || 5000
+const frontendUrl = process.env.FRONTEND_URL || 'https://restaurant-app-snowy-three.vercel.app'
+const frontendOrigin = new URL(
+  frontendUrl.includes('://') ? frontendUrl : `https://${frontendUrl}`
+).origin
 
 app.use(cors({
-  origin: ['restaurant-app-snowy-three.vercel.app', 'http://localhost:3000/api'],
+  origin: [frontendOrigin, 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
 }))
 app.use(express.json({ limit: '10mb' }))
