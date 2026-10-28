@@ -34,6 +34,7 @@ app.use(cors({
   origin: [
     frontendOrigin,
     'https://restaurant-app-snowy-three.vercel.app',
+    /^https:\/\/restaurant-[a-z0-9]+-varsha2004nayak-3613s-projects\.vercel\.app$/,
     'http://localhost:3000',
     'http://localhost:5173',
   ],
