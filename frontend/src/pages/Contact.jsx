@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { MapPin, Phone, Mail, Clock, Send, ChevronDown, ChevronUp, Loader2, CheckCircle } from 'lucide-react'
 import { API_BASE } from '../data/dishes.js'
+import CabAddon, { emptyCab, validateCab, buildCabPayload, shiftDateTime } from '../components/CabAddon.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import './Contact.css'
 
 const faqs = [
@@ -16,10 +18,21 @@ const emptyForm = { name: '', email: '', phone: '', guests: '2', date: '', messa
 export default function Contact() {
   const [form, setForm]       = useState(emptyForm)
   const [sent, setSent]       = useState(false)
+
+  // ← NEW: logged-in user's name/email prefilled so the booking shows in Profile → My Bookings
+  const { user, getToken } = useAuth()
+  useEffect(() => {
+    if (user) setForm(f => ({ ...f, name: f.name || user.name || '', email: f.email || user.email || '' }))
+  }, [user, sent])
   const [open, setOpen]       = useState(null)
   const [info, setInfo]       = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError]   = useState('')
+  const [cab, setCab]               = useState(emptyCab)   // ← NEW: cab add-on
+  const [cabResult, setCabResult]   = useState(null)
+  const [cabError, setCabError]     = useState('')
+
+  const restaurantAddress = info?.address || '42 Spice Lane, Bandra West, Mumbai'
 
   /* fetch contact info from backend */
   useEffect(() => {
@@ -36,15 +49,40 @@ export default function Contact() {
       setFormError('Please fill in your name, email and preferred date.')
       return
     }
+    const cabErr = validateCab(cab)
+    if (cabErr) { setFormError(cabErr); return }
     setSubmitting(true)
+    setCabResult(null)
+    setCabError('')
     try {
       const res  = await fetch(`${API_BASE}/contact/reservation`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}) },
         body: JSON.stringify(form),
       })
       const data = await res.json()
       if (!data.success) throw new Error(data.error || 'Submission failed')
+
+      // ← NEW: table is booked — now book the cab (if requested) linked to this reservation
+      if (cab.enabled) {
+        try {
+          const cabRes  = await fetch(`${API_BASE}/cabs`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}) },
+            body: JSON.stringify({
+              ...buildCabPayload(cab, restaurantAddress),
+              name: form.name, email: form.email, phone: form.phone,
+              reservationId: data.data._id,
+              venueName: 'Hungry Hub Restaurant',
+            }),
+          })
+          const cabData = await cabRes.json()
+          if (!cabData.success) throw new Error(cabData.error || 'Cab booking failed')
+          setCabResult(cabData.data)
+        } catch (err) {
+          setCabError(err.message || 'Cab booking failed')
+        }
+      }
       setSent(true)
     } catch (err) {
       setFormError(err.message || 'Something went wrong. Please try again.')
@@ -111,7 +149,13 @@ export default function Contact() {
               <div className="sent-check">✓</div>
               <h2>Request Received!</h2>
               <p>We'll confirm your reservation within 2 hours. A confirmation email has been sent to you. See you soon!</p>
-              <button className="btn-primary" onClick={() => { setSent(false); setForm(emptyForm) }}>
+              {cabResult && (
+                <p>🚖 Your cab is booked too ({cabResult.carType}) — estimated fare <strong>₹{cabResult.estimatedFare}</strong>. Driver details will be shared once confirmed.</p>
+              )}
+              {cabError && (
+                <p style={{ color: '#b91c1c' }}>Your table is booked, but the cab could not be booked: {cabError}. <a href="/cabs">Book a cab here</a>.</p>
+              )}
+              <button className="btn-primary" onClick={() => { setSent(false); setForm(emptyForm); setCab(emptyCab); setCabResult(null); setCabError('') }}>
                 Make Another Reservation
               </button>
             </div>
@@ -142,6 +186,7 @@ export default function Contact() {
                   <label>Email *</label>
                   <input
                     type="email"
+                    readOnly
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                     placeholder="you@example.com"
@@ -174,6 +219,15 @@ export default function Contact() {
                     rows={4}
                   />
                 </div>
+                {/* ← NEW: cab to and from the restaurant */}
+                <CabAddon
+                  cab={cab}
+                  setCab={setCab}
+                  venueName="Hungry Hub"
+                  venueAddress={restaurantAddress}
+                  suggestedPickup={shiftDateTime(form.date, -45)}
+                  suggestedReturn={shiftDateTime(form.date, 120)}
+                />
                 {formError && (
                   <div style={{
                     background: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5',

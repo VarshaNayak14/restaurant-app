@@ -60,6 +60,18 @@ const orderSchema = new mongoose.Schema({
     enum: ['confirmed', 'preparing', 'out_for_delivery', 'delivered', 'cancelled'],
     default: 'confirmed',
   },
+
+  /* ── Return / refund fields ── */
+  returnStatus: {
+    type: String,
+    enum: ['none', 'requested', 'approved', 'rejected', 'completed'],
+    default: 'none',
+  },
+  returnReason:      { type: String, default: null },
+  returnItems:       { type: [String], default: [] }, // item ids being returned
+  returnRequestedAt: { type: Date, default: null },
+  returnProcessedAt: { type: Date, default: null },
+  returnAdminNote:   { type: String, default: null },
 }, { timestamps: true })
 
 module.exports = mongoose.model('Order', orderSchema)

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { CheckCircle, MapPin, Clock, Package, Bike, Home, ArrowRight, Navigation } from 'lucide-react'
+import { CheckCircle, MapPin, Clock, Package, Bike, Home, ArrowRight, Navigation, FileText } from 'lucide-react'
 import './OrderConfirmation.css'
 
 const STEPS = [
@@ -154,6 +154,13 @@ export default function OrderConfirmation() {
             >
               <Navigation size={15}/> Track Your Order
             </button>
+
+            {/* ← NEW: bill / invoice */}
+            {order._id && (
+              <Link to={`/invoice/${order._id}`} className="btn-outline" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                <FileText size={15}/> View / Download Bill
+              </Link>
+            )}
 
             <Link to="/menu" className="btn-outline" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
               Order Again <ArrowRight size={15}/>

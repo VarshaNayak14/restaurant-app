@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { API_BASE } from '../data/dishes.js'
@@ -115,13 +115,18 @@ export default function Login() {
   const { login }  = useAuth()
   const navigate   = useNavigate()
 
+  // ← NEW: ?redirect=/hotels → after login, go back to the page the user came from
+  const [searchParams] = useSearchParams()
+  const redirect = (searchParams.get('redirect') || '').startsWith('/') && !searchParams.get('redirect').startsWith('//')
+    ? searchParams.get('redirect') : ''
+
   async function handleSubmit(e) {
     e.preventDefault()
     setErr(''); setLoading(true)
     await new Promise(r => setTimeout(r, 500))
     const res = await login(email, pass)
     setLoading(false)
-    if (res.success) navigate(res.role === 'admin' ? '/admin' : '/')
+    if (res.success) navigate(res.role === 'admin' || res.role === 'superadmin' ? '/admin' : (redirect || '/'))
     else setErr(res.error)
   }
 
@@ -166,7 +171,7 @@ export default function Login() {
               <div className="auth-divider" />
               <p style={{ marginTop: 12 }}>
                 Don't have an account?&nbsp;
-                <Link to="/register">Register free</Link>
+                <Link to={redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register"}>Register free</Link>
               </p>
             </div>
 

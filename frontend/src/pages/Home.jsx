@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowRight, Star, Clock, Flame, Leaf, ChevronDown, Award, Users, UtensilsCrossed, Play, X, ChevronLeft, ChevronRight, ZoomIn, Heart, Tag } from 'lucide-react'
-import { fetchFeaturedDishes, fetchTestimonials, fetchCategories, fetchChefs, fetchGallery, fetchActiveOffer } from '../data/dishes.js'
+import { ArrowRight, Star, Clock, Flame, Leaf, ChevronDown, Award, Users, UtensilsCrossed, Play, X, ChevronLeft, ChevronRight, ZoomIn, Heart, Tag, MapPin, BedDouble, Car } from 'lucide-react'
+import { API_BASE, fetchFeaturedDishes, fetchTestimonials, fetchCategories, fetchChefs, fetchGallery, fetchActiveOffer } from '../data/dishes.js'
 import { useCart } from '../context/CartContext.jsx'
 import { useWishlist } from '../context/WishlistContext.jsx'
+import { DEFAULT_RATES, CAB_IMAGES } from '../components/CabAddon.jsx'
 import './Home.css'
 
 function Counter({ target, suffix = '', display }) {
@@ -53,7 +54,46 @@ function useCountdown(target) {
   return time
 }
 
+/* ── Hero slides — same layout, only image + text change ── */
+const HERO_SLIDES = [
+  {
+    t1: 'Unleashing Extraordinary Flavours', t2: 'One Plate at a Time',
+    sub: 'Discover a mosaic of culinary excellence from farm-fresh ingredients to artfully curated menus, where every dish tells a tale of craftsmanship and every moment is a celebration of taste.',
+    img: '/pizza.png', alt: 'Pizza',
+    primary: { to: '/menu', label: 'Order Now' }, ghost: { to: '/about', label: 'Order Process' },
+  },
+  {
+    t1: 'Royal Biryani, Slow Cooked', t2: 'Straight From Our Kitchen',
+    sub: 'Fragrant basmati, tender meat and hand-ground spices sealed in a dum pot for hours — a recipe passed down through generations, now delivered hot to your door.',
+    img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=900&h=900&fit=crop&q=80', alt: 'Biryani',
+    primary: { to: '/menu', label: 'Order Now' }, ghost: { to: '/menu', label: 'View Menu' },
+  },
+  {
+    t1: 'Reserve Your Table', t2: 'We Will Send the Cab',
+    sub: 'Book a table for any occasion and add a cab for the ride to and from the restaurant — pickup and return times are suggested automatically.',
+    img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&h=900&fit=crop&q=80', alt: 'Restaurant dining',
+    primary: { to: '/contact', label: 'Book a Table' }, ghost: { to: '/cabs', label: 'Book a Cab' },
+  },
+  {
+    t1: 'Stay in Comfort', t2: 'Book Hotels With Ease',
+    sub: 'Handpicked hotels with great amenities and fair prices. Book your room, add a cab for check-in and check-out, and track everything in My Bookings.',
+    img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&h=900&fit=crop&q=80', alt: 'Hotel',
+    primary: { to: '/hotels', label: 'Book a Hotel' }, ghost: { to: '/cabs', label: 'Add a Cab' },
+  },
+]
+
 export default function Home() {
+
+  // Hero slider
+  const [heroIdx, setHeroIdx]       = useState(0)
+  const hero = HERO_SLIDES[heroIdx]
+  // Preload slide images so they don't flash in when the slide changes
+  useEffect(() => { HERO_SLIDES.forEach(s => { const im = new Image(); im.src = s.img }) }, [])
+  // Auto-advance every 5s; restarts after a manual dot click
+  useEffect(() => {
+    const t = setTimeout(() => setHeroIdx(i => (i + 1) % HERO_SLIDES.length), 5000)
+    return () => clearTimeout(t)
+  }, [heroIdx])
 
   const { addToCart } = useCart()
   const { toggleWishlist, isWishlisted } = useWishlist()
@@ -64,6 +104,8 @@ export default function Home() {
 
   // Dynamic data states
   const [featuredDishes, setFeaturedDishes]   = useState([])
+  const [homeHotels, setHomeHotels]         = useState([])
+  const [cabRates, setCabRates]               = useState(DEFAULT_RATES)
   const [testimonials, setTestimonials]       = useState([])
   const [homeCategories, setHomeCategories]   = useState([])
   const [chefs, setChefs]                     = useState([])
@@ -108,6 +150,13 @@ export default function Home() {
   // Fetch all dynamic data
   useEffect(() => {
     fetchFeaturedDishes().then(setFeaturedDishes).catch(() => {})
+    // Hotels (top rated, max 4) + cab rates for the home page sections
+    fetch(`${API_BASE}/hotels`).then(r => r.json())
+      .then(d => { if (d.success) setHomeHotels([...d.data].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4)) })
+      .catch(() => {})
+    fetch(`${API_BASE}/cabs/rates`).then(r => r.json())
+      .then(d => { if (d.success && d.data) setCabRates(d.data) })
+      .catch(() => {})
     fetchTestimonials().then(setTestimonials).catch(() => {})
     fetchCategories().then(setHomeCategories).catch(() => {})
     fetchChefs().then(setChefs).catch(() => {})
@@ -171,39 +220,48 @@ export default function Home() {
   return (
     <div className="home">
 
-      {/* ══════════════════ HERO ══════════════════ */}
+      {/* ══════════════════ HERO (4 auto-rotating slides, same design) ══════════════════ */}
       <section className="hero2">
         <div className="h2-bg" />
 
-        <div className="h2-left in">
+        <div className="h2-left in h2-slide-anim" key={`l${heroIdx}`}>
           <h1 className="h2-title">
-            <span className="h2-t1">Unleashing Extraordinary Flavours</span>
-            <span className="h2-t2">One Plate at a Time</span>
+            <span className="h2-t1">{hero.t1}</span>
+            <span className="h2-t2">{hero.t2}</span>
           </h1>
 
-          <p className="h2-sub">
-            Discover a mosaic of culinary excellence from farm-fresh ingredients to artfully curated menus, where every dish tells a tale of craftsmanship and every moment is a celebration of taste.
-          </p>
+          <p className="h2-sub">{hero.sub}</p>
 
           <div className="h2-actions">
-            <Link to="/menu" className="h2-btn-primary">
-              Order Now
+            <Link to={hero.primary.to} className="h2-btn-primary">
+              {hero.primary.label}
             </Link>
-            <Link to="/about" className="h2-btn-ghost">
+            <Link to={hero.ghost.to} className="h2-btn-ghost">
               <span className="h2-play-ring"><Play size={13} fill="currentColor"/></span>
-              Order Process
+              {hero.ghost.label}
             </Link>
           </div>
         </div>
 
-        <div className="h2-right in">
+        <div className="h2-right in h2-slide-anim" key={`r${heroIdx}`}>
           <div className="h2-dish-simple">
             <img
-              src="/pizza.png"
-              alt="Pizza"
+              src={hero.img}
+              alt={hero.alt}
               className="h2-dish-img-static"
             />
           </div>
+        </div>
+
+        <div className="h2-dots">
+          {HERO_SLIDES.map((s, i) => (
+            <button
+              key={i}
+              className={`h2-dot ${i === heroIdx ? 'active' : ''}`}
+              onClick={() => setHeroIdx(i)}
+              aria-label={`Show slide ${i + 1}: ${s.t1}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -389,6 +447,108 @@ export default function Home() {
           </div>
           <div className="section-cta">
             <Link to="/menu" className="btn-primary">View Full Menu <ArrowRight size={15}/></Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════ HOTELS ══════════════════ */}
+      {homeHotels.length > 0 && (
+        <section className="section featured-section hc-section" id="hotels">
+          <div className="container">
+            <div className="section-header center">
+              <span className="section-eyebrow"><BedDouble size={13}/> Comfortable Stays</span>
+              <h2 className="section-title">Book a <span>Hotel</span></h2>
+              <div className="gold-line center"/>
+              <p className="section-sub">Handpicked stays — add a cab for pickup and drop in the same booking</p>
+            </div>
+            <div className="featured-grid">
+              {homeHotels.map((h, i) => (
+                <div
+                  key={h._id}
+                  className="feat-card"
+                  style={{ animationDelay: `${i * 0.12}s`, cursor: 'pointer' }}
+                  onClick={() => navigate(`/hotels/${h._id}`)}
+                >
+                  <div className="feat-img-wrap">
+                    <img
+                      src={h.image || 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&fit=crop'}
+                      alt={h.name}
+                      className="feat-img"
+                    />
+                    <div className="feat-overlay">
+                      <button className="feat-add-btn" onClick={e => { e.stopPropagation(); navigate(`/hotels/${h._id}`) }}>
+                        View &amp; Book
+                      </button>
+                    </div>
+                    <span className="bestseller-badge"><Star size={10} fill="currentColor"/> {h.rating}</span>
+                  </div>
+                  <div className="feat-body">
+                    <h3>{h.name}</h3>
+                    <p className="hc-loc"><MapPin size={13}/> {h.city}</p>
+                    {h.description && <p className="hc-desc">{h.description}</p>}
+                    <div className="feat-footer">
+                      <span className="feat-price-wrap">
+                        <span className="feat-price">₹{h.pricePerNight}</span>
+                        <small className="hc-unit"> / night</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="section-cta">
+              <Link to="/hotels" className="btn-primary">View All Hotels <ArrowRight size={15}/></Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════ CABS ══════════════════ */}
+      <section className="section featured-section hc-section hc-cabs" id="cabs">
+        <div className="container">
+          <div className="section-header center">
+            <span className="section-eyebrow"><Car size={13}/> Easy Rides</span>
+            <h2 className="section-title">Book a <span>Cab</span></h2>
+            <div className="gold-line center"/>
+            <p className="section-sub">Pickup &amp; drop to the restaurant or your hotel — pick the ride that suits you</p>
+          </div>
+          <div className="featured-grid">
+            {Object.entries(cabRates).map(([key, r], i) => (
+              <div
+                key={key}
+                className="feat-card hc-cab-card"
+                style={{ animationDelay: `${i * 0.12}s`, cursor: 'pointer' }}
+                onClick={() => navigate('/cabs')}
+              >
+                <div className="feat-img-wrap">
+                  {CAB_IMAGES[key] && (
+                    <img
+                      src={CAB_IMAGES[key]}
+                      alt={r.label}
+                      className="feat-img"
+                      onError={e => { e.currentTarget.style.display = 'none' }}
+                    />
+                  )}
+                  <span className="hc-cab-fallback"><Car size={54}/></span>
+                  <span className="bestseller-badge"><Car size={10}/> {r.label}</span>
+                </div>
+                <div className="feat-body">
+                  <h3>{r.label}</h3>
+                  <p className="hc-loc"><Users size={13}/> Up to {r.seats} seats</p>
+                  <p className="hc-desc">Base ₹{r.base} + ₹{r.perKm}/km</p>
+                  <div className="feat-footer">
+                    <span className="feat-price-wrap">
+                      <small className="hc-unit">from </small>
+                      <span className="feat-price">₹{r.base}</span>
+                    </span>
+                    <span className="hc-book">Book <ArrowRight size={13}/></span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="section-cta">
+            <Link to="/cabs" className="btn-primary">Book a Cab <ArrowRight size={15}/></Link>
           </div>
         </div>
       </section>

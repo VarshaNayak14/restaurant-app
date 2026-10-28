@@ -13,7 +13,8 @@
 }
 
 .nav-inner {
-  max-width: 1250px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 28px;
   display: flex;
@@ -195,13 +196,15 @@
 /* ===== RESPONSIVE BREAKPOINTS ===== */
 
 /* Large tablet / small laptop — thoda compress karo links */
-@media (max-width: 1100px) {
-  .nav-inner { gap: 24px; }
-  .nav-link { padding: 8px 10px; font-size: .82rem; }
+@media (max-width: 1400px) {
+  .nav-inner { gap: 20px; padding: 0 20px; }
+  .nav-link { padding: 8px 9px; font-size: .8rem; }
+  .nav-actions { gap: 8px; }
+  .logo-name { font-size: 1.15rem; }
 }
 
-/* Tablet — sirf hamburger + logo */
-@media (max-width: 900px) {
+/* Laptop / tablet — links + actions don't fit, so hamburger + logo only */
+@media (max-width: 1200px) {
   .nav-links,
   .nav-actions { display: none; }
 
@@ -237,7 +240,9 @@
 }
 
 .mega-menu {
-  position: fixed;
+  /* absolute → always anchored right below the fixed .navbar
+     (fixed + top:100% went off-screen when the page was not scrolled) */
+  position: absolute;
   left: 0;
   right: 0;
   top: 100%;
@@ -450,3 +455,8 @@
   object-fit: cover;
   flex-shrink: 0;
 }
+/* ── Theme toggle ── */
+.theme-toggle-btn { cursor: pointer; }
+.theme-toggle-btn svg { transition: transform .4s ease; }
+.theme-toggle-btn:hover svg { transform: rotate(25deg); }
+.mob-theme-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: none; text-align: left; font: inherit; cursor: pointer; }

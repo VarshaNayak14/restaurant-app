@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import logo from '/logo.png'
@@ -31,6 +31,11 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const { register }          = useAuth()
   const navigate              = useNavigate()
+
+  // ← NEW: ?redirect=/hotels → after login, go back to the page the user came from
+  const [searchParams] = useSearchParams()
+  const redirect = (searchParams.get('redirect') || '').startsWith('/') && !searchParams.get('redirect').startsWith('//')
+    ? searchParams.get('redirect') : ''
   const strength              = strengthLabel(pass)
 
   async function handleSubmit(e) {
@@ -38,7 +43,7 @@ export default function Register() {
     setErr(''); setLoading(true)
     const res = await register(name, email, pass)   // await — API call hai ab
     setLoading(false)
-    if (res.success) navigate('/')
+    if (res.success) navigate(redirect || '/')
     else setErr(res.error)
   }
 
@@ -88,7 +93,7 @@ export default function Register() {
           <div className="auth-divider" />
           <p style={{ marginTop: 12 }}>
             Already registered?&nbsp;
-            <Link to="/login">Sign in</Link>
+            <Link to={redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : "/login"}>Sign in</Link>
           </p>
         </div>
 

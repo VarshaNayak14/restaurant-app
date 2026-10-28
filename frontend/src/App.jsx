@@ -34,6 +34,15 @@ import AdminReservations from './admin/AdminReservations.jsx'
 import AdminContactSettings from './admin/AdminContactSettings.jsx'
 import AdminOrders from './admin/AdminOrder.jsx'
 import AdminDeliverySettings from './admin/AdminDeliverySettings.jsx'
+import HotelDetail from './pages/HotelDetail.jsx'       // ← NEW: hotel detail page
+import Hotels from './pages/Hotels.jsx'                 // ← NEW: hotel booking
+import CabBooking from './pages/CabBooking.jsx'         // ← NEW: cab booking
+import AdminHotels from './admin/AdminHotels.jsx'       // ← NEW
+import AdminCabs from './admin/AdminCabs.jsx'           // ← NEW
+import Invoice from './pages/Invoice.jsx'               // ← NEW: order bill
+import BookingInvoice from './pages/BookingInvoice.jsx' // ← NEW: hotel / cab bill
+import AdminBills from './admin/AdminBills.jsx'         // ← NEW: all customer bills
+import AdminAdmins from './admin/AdminAdmins.jsx'       // ← NEW: superadmin manages admins
 import './App.css'
 
 // Admin route guard - loading ke time wait karo, phir check karo
@@ -65,7 +74,7 @@ function AdminRoute({ children }) {
   }
 
   if (!user) return <Navigate to="/login" replace />
-  if (user.role !== 'admin') return <Navigate to="/" replace />
+  if (user.role !== 'admin' && user.role !== 'superadmin') return <Navigate to="/" replace />
   return children
 }
 
@@ -110,6 +119,10 @@ export default function App() {
                   <Route path="contact" element={<AdminContactSettings />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="delivery" element={<AdminDeliverySettings />} />
+                  <Route path="hotels" element={<AdminHotels />} />
+                  <Route path="cabs" element={<AdminCabs />} />
+                  <Route path="bills" element={<AdminBills />} />
+                  <Route path="admins" element={<AdminAdmins />} />
 
 
                 </Route>
@@ -120,6 +133,9 @@ export default function App() {
                 <Route path="/dish/:id" element={<PublicLayout><DishDetail /></PublicLayout>} />
                 <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
                 <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
+                <Route path="/hotels" element={<PublicLayout><Hotels /></PublicLayout>} />
+                <Route path="/hotels/:id" element={<PublicLayout><HotelDetail /></PublicLayout>} />
+                <Route path="/cabs" element={<PublicLayout><CabBooking /></PublicLayout>} />
                 <Route path="/login" element={<PublicLayout showCart={false} showSocial={false}><Login /></PublicLayout>} />
                 <Route path="/register" element={<PublicLayout showCart={false} showSocial={false}><Register /></PublicLayout>} />
                 <Route path="/reset-password/:token" element={<PublicLayout showCart={false} showSocial={false}><ResetPassword /></PublicLayout>} />
@@ -129,6 +145,8 @@ export default function App() {
                 <Route path="/profile" element={<PublicLayout><Profile /></PublicLayout>} />
                 <Route path="/order-tracking" element={<PublicLayout><OrderTracking /></PublicLayout>} />
                 <Route path="/wishlist" element={<PublicLayout><Wishlist /></PublicLayout>} />
+                <Route path="/invoice/:id" element={<Invoice />} />
+                <Route path="/booking-bill/:type/:id" element={<BookingInvoice />} />
               </Routes>
             </BrowserRouter>
           </WishlistProvider>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import {
   Package, Search, RefreshCw, ChevronDown,
   Clock, User, MapPin, CreditCard, Filter,
-  CheckCircle2, ChefHat, Bike, Home, XCircle, Loader2,
+  CheckCircle2, ChefHat, Bike, Home, XCircle, Loader2, RotateCcw, FileText,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -17,6 +17,13 @@ const STATUS_META = {
 }
 
 const STATUS_FLOW = ['confirmed', 'preparing', 'out_for_delivery', 'delivered']
+
+const RETURN_META = {
+  requested: { label: 'Return Requested', color: '#f59e0b', bg: '#fffbeb' },
+  approved:  { label: 'Return Approved',  color: '#3b82f6', bg: '#eff6ff' },
+  rejected:  { label: 'Return Rejected',  color: '#ef4444', bg: '#fef2f2' },
+  completed: { label: 'Return Completed', color: '#10b981', bg: '#ecfdf5' },
+}
 
 const PAYMENT_LABEL = { card: 'Card', upi: 'UPI', wallet: 'Wallet', cod: 'COD' }
 
@@ -91,6 +98,22 @@ export default function AdminOrders() {
       const data = await res.json()
       if (data.success) {
         setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status } : o))
+      }
+    } catch {}
+    setUpdating(null)
+  }
+
+  async function updateReturnStatus(orderId, returnStatus) {
+    setUpdating(orderId)
+    try {
+      const res  = await fetch(`${API}/orders/${orderId}/return-status`, {
+        method: 'PATCH',
+        headers: authH(),
+        body: JSON.stringify({ returnStatus }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setOrders(prev => prev.map(o => o._id === orderId ? { ...o, returnStatus } : o))
       }
     } catch {}
     setUpdating(null)
@@ -202,6 +225,11 @@ export default function AdminOrders() {
                   <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 1 }}>
                     {new Date(order.createdAt).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}
                   </div>
+                  {/* ← NEW: open the bill in a new tab */}
+                  <a href={`/invoice/${order._id}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, fontSize: '0.74rem', fontWeight: 600, color: '#2563eb' }}>
+                    <FileText size={12}/> View Bill
+                  </a>
                 </div>
 
                 {/* Customer */}
@@ -227,6 +255,18 @@ export default function AdminOrders() {
 
                 {/* Status badge */}
                 <StatusBadge status={order.status}/>
+
+                {/* Return badge */}
+                {order.returnStatus && order.returnStatus !== 'none' && (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: RETURN_META[order.returnStatus]?.bg, color: RETURN_META[order.returnStatus]?.color,
+                    padding: '3px 10px', borderRadius: 20,
+                    fontWeight: 600, fontSize: '0.75rem',
+                  }}>
+                    <RotateCcw size={13}/> {RETURN_META[order.returnStatus]?.label}
+                  </span>
+                )}
 
                 {/* Expand icon */}
                 <ChevronDown
@@ -348,6 +388,64 @@ export default function AdminOrders() {
                         <XCircle size={13}/> Cancel
                       </button>
                     </div>
+
+                    {/* Return / refund request */}
+                    {order.returnStatus && order.returnStatus !== 'none' && (
+                      <div style={{ marginTop: 22 }}>
+                        <h4 style={{ margin: '0 0 8px', fontSize: '0.85rem', color: '#aaa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
+                          <RotateCcw size={13} style={{ verticalAlign: -2 }}/> Food Return Request
+                        </h4>
+                        {order.returnReason && (
+                          <p style={{ margin: '0 0 10px', fontSize: '0.85rem', color: '#555' }}>
+                            <strong>Reason:</strong> {order.returnReason}
+                          </p>
+                        )}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                          <button
+                            disabled={order.returnStatus === 'approved' || order.returnStatus === 'completed' || updating === order._id}
+                            onClick={() => updateReturnStatus(order._id, 'approved')}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 5,
+                              padding: '6px 12px', borderRadius: 8, fontSize: '0.8rem',
+                              border: '1px solid #3b82f6',
+                              background: order.returnStatus === 'approved' ? '#eff6ff' : 'transparent',
+                              color: '#3b82f6', cursor: 'pointer',
+                              opacity: (order.returnStatus === 'completed') ? 0.4 : 1,
+                            }}
+                          >
+                            <CheckCircle2 size={13}/> Approve Return
+                          </button>
+                          <button
+                            disabled={order.returnStatus === 'rejected' || order.returnStatus === 'completed' || updating === order._id}
+                            onClick={() => updateReturnStatus(order._id, 'rejected')}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 5,
+                              padding: '6px 12px', borderRadius: 8, fontSize: '0.8rem',
+                              border: '1px solid #ef4444',
+                              background: order.returnStatus === 'rejected' ? '#fef2f2' : 'transparent',
+                              color: '#ef4444', cursor: 'pointer',
+                              opacity: (order.returnStatus === 'completed') ? 0.4 : 1,
+                            }}
+                          >
+                            <XCircle size={13}/> Reject Return
+                          </button>
+                          <button
+                            disabled={order.returnStatus !== 'approved' || updating === order._id}
+                            onClick={() => updateReturnStatus(order._id, 'completed')}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 5,
+                              padding: '6px 12px', borderRadius: 8, fontSize: '0.8rem',
+                              border: '1px solid #10b981',
+                              background: order.returnStatus === 'completed' ? '#ecfdf5' : 'transparent',
+                              color: '#10b981', cursor: 'pointer',
+                              opacity: order.returnStatus !== 'approved' ? 0.4 : 1,
+                            }}
+                          >
+                            <Home size={13}/> Mark Refund Completed
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

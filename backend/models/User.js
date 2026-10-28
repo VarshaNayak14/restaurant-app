@@ -45,8 +45,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'superadmin'],
       default: 'user',
+    },
+    // Admin panel sections this admin can open (set by the superadmin; ignored for superadmin)
+    permissions: {
+      type: [String],
+      default: [],
     },
     orders: {
       type: Array,

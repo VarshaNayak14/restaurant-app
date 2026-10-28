@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { User, Package, LogOut, Star, MapPin, Clock, Loader2, X, CheckCircle2, ChevronLeft, Camera, Mic, Trash2 } from 'lucide-react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { User, Package, LogOut, Star, MapPin, Clock, Loader2, X, CheckCircle2, ChevronLeft, Camera, Mic, Trash2, RotateCcw, CalendarCheck, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
+import MyBookings from '../components/MyBookings.jsx'   // ← NEW: hotel / table / cab bookings
 import './Profile.css'
 
 const API = 'https://restaurant-app-djxk.onrender.com/api'
@@ -303,18 +304,99 @@ const STATUS_COLOR = {
   cancelled:        '#ef4444',
 }
 
+const RETURN_LABEL = {
+  requested: 'Return Requested',
+  approved:  'Return Approved',
+  rejected:  'Return Rejected',
+  completed: 'Return Completed',
+}
+const RETURN_COLOR = {
+  requested: '#f59e0b',
+  approved:  '#3b82f6',
+  rejected:  '#ef4444',
+  completed: '#10b981',
+}
+
+/* ── Return Order Modal ── */
+function ReturnModal({ order, onClose, onSubmitted, getToken }) {
+  const [reason, setReason] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
+
+  async function handleSubmit() {
+    if (!reason.trim()) { setError('Kripya return ka reason likhein.'); return }
+    setSaving(true)
+    setError('')
+    try {
+      const res = await fetch(`${API}/orders/${order._id}/return`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ reason }),
+      })
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error || 'Return request bhej nahi payi.')
+      onSubmitted(data.order)
+      onClose()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="review-modal-overlay" onClick={onClose}>
+      <div className="review-modal" onClick={e => e.stopPropagation()}>
+        <button className="review-modal-close" onClick={onClose}><X size={18}/></button>
+        <h3 className="review-modal-title">Return / Refund Order</h3>
+        <p className="review-modal-sub">Order {order.orderId} — food return ka reason batayein</p>
+
+        <div className="rw-comment-wrap" style={{ marginTop: 16 }}>
+          <textarea
+            className="rw-comment-input"
+            placeholder="Reason for return (e.g. wrong item, quality issue, damaged packaging)…"
+            value={reason}
+            onChange={e => setReason(e.target.value)}
+            rows={4}
+            maxLength={500}
+          />
+        </div>
+        {error && <p className="review-error">{error}</p>}
+
+        <div className="rw-footer">
+          <button className="rw-submit-btn" onClick={handleSubmit} disabled={saving}>
+            {saving ? <><Loader2 size={16} className="spin"/> Submitting…</> : 'Submit Return Request'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const TABS = [
   { id: 'orders',  label: 'My Orders', icon: <Package size={16}/> },
+  { id: 'bookings', label: 'My Bookings', icon: <CalendarCheck size={16}/> },  // ← NEW
   { id: 'profile', label: 'Account',   icon: <User size={16}/> },
   { id: 'rewards', label: 'Rewards',   icon: <Star size={16}/> },
 ]
 
 export default function Profile() {
-  const [tab, setTab]       = useState('orders')
+  const [searchParams] = useSearchParams()
+  const [tab, setTab]       = useState(TABS.some(t => t.id === searchParams.get('tab')) ? searchParams.get('tab') : 'orders')
+
+  // ← NEW: open the tab from ?tab=… (e.g. navbar "My Bookings" while already on /profile)
+  useEffect(() => {
+    const t = searchParams.get('tab')
+    if (TABS.some(x => x.id === t)) setTab(t)
+  }, [searchParams])
   const [orders, setOrders] = useState([])
   const [loadingOrders, setLoadingOrders] = useState(false)
   const [reviewOrder, setReviewOrder] = useState(null) // order currently being rated (opens modal)
   const [reviewedByOrder, setReviewedByOrder] = useState({}) // { orderId: { dishId: review } }
+  const [returnOrder, setReturnOrder] = useState(null) // order currently being returned (opens modal)
 
   const { user, logout, getToken } = useAuth()
   const navigate = useNavigate()
@@ -349,6 +431,10 @@ export default function Profile() {
         }
       })
       .catch(() => {})
+  }
+
+  function handleReturnSubmitted(updatedOrder) {
+    setOrders(prev => prev.map(o => o._id === updatedOrder._id ? updatedOrder : o))
   }
 
   function handleReviewSaved(dishId, review) {
@@ -420,36 +506,74 @@ export default function Profile() {
                           <Clock size={12}/> {new Date(o.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
                         </div>
                       </div>
-                      <span className="order-status" style={{
-                        background: STATUS_COLOR[o.status] + '22',
-                        color: STATUS_COLOR[o.status],
-                        padding: '4px 10px', borderRadius: '20px', fontWeight: 600, fontSize: '0.8rem',
-                      }}>
-                        {STATUS_LABEL[o.status] || o.status}
-                      </span>
+                      <div className="oc-badges">
+                        <span className="order-status" style={{
+                          background: STATUS_COLOR[o.status] + '22',
+                          color: STATUS_COLOR[o.status],
+                          padding: '4px 10px', borderRadius: '20px', fontWeight: 600, fontSize: '0.8rem',
+                        }}>
+                          {STATUS_LABEL[o.status] || o.status}
+                        </span>
+                        {o.returnStatus && o.returnStatus !== 'none' && (
+                          <span className="order-status" style={{
+                            background: RETURN_COLOR[o.returnStatus] + '22',
+                            color: RETURN_COLOR[o.returnStatus],
+                            padding: '4px 10px', borderRadius: '20px', fontWeight: 600, fontSize: '0.8rem',
+                          }}>
+                            {RETURN_LABEL[o.returnStatus] || o.returnStatus}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="order-items-preview">
-                      {o.items.slice(0, 3).map((i, idx) => (
-                        <img key={idx} src={i.image} alt={i.name} title={i.name}/>
-                      ))}
-                      {o.items.length > 3 && <div className="more-items">+{o.items.length - 3}</div>}
+                    <div className="order-items-row">
+                      <div className="order-items-preview">
+                        {o.items.slice(0, 3).map((i, idx) => (
+                          <img key={idx} src={i.image} alt={i.name} title={i.name}/>
+                        ))}
+                        {o.items.length > 3 && <div className="more-items">+{o.items.length - 3}</div>}
+                      </div>
+                      <div className="order-items-names">
+                        {o.items.slice(0, 3).map((i, idx) => (
+                          <div key={idx}><strong>{i.name}</strong>{i.qty ? ` × ${i.qty}` : ''}</div>
+                        ))}
+                        {o.items.length > 3 && <div>+ {o.items.length - 3} more</div>}
+                      </div>
                     </div>
                     <div className="oc-footer">
                       <span>{o.items.length} item{o.items.length !== 1 ? 's' : ''} · {o.payment?.toUpperCase()}</span>
-                      <span className="order-total">₹{o.total}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        {/* ← NEW: bill / invoice */}
+                        <Link to={`/invoice/${o._id}`} className="oc-bill-link"><FileText size={14}/> Bill</Link>
+                        <span className="order-total">₹{o.total}</span>
+                      </span>
                     </div>
                     {o.status === 'delivered' && (
-                      <button className="rate-review-btn" onClick={() => openReviewModal(o)}>
-                        <Star size={14}/> Rate & Review
-                        {reviewedByOrder[o._id] && Object.keys(reviewedByOrder[o._id]).length > 0 && (
-                          <span className="rate-review-done-tag">
-                            {Object.keys(reviewedByOrder[o._id]).length}/{o.items.length} rated
-                          </span>
+                      <div className="oc-actions">
+                        <button className="rate-review-btn" onClick={() => openReviewModal(o)}>
+                          <Star size={14}/> Rate & Review
+                          {reviewedByOrder[o._id] && Object.keys(reviewedByOrder[o._id]).length > 0 && (
+                            <span className="rate-review-done-tag">
+                              {Object.keys(reviewedByOrder[o._id]).length}/{o.items.length} rated
+                            </span>
+                          )}
+                        </button>
+                        {(!o.returnStatus || o.returnStatus === 'none' || o.returnStatus === 'rejected') && (
+                          <button className="rate-review-btn" onClick={() => setReturnOrder(o)}>
+                            <RotateCcw size={14}/> Return Order
+                          </button>
                         )}
-                      </button>
+                      </div>
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* ── NEW: My Bookings tab (hotels, tables, cabs) ── */}
+            {tab === 'bookings' && (
+              <div>
+                <h2 className="profile-section-title">My Bookings</h2>
+                <MyBookings />
               </div>
             )}
 
@@ -507,6 +631,15 @@ export default function Profile() {
           reviewedMap={reviewedByOrder[reviewOrder._id] || {}}
           onClose={() => setReviewOrder(null)}
           onSaved={handleReviewSaved}
+          getToken={getToken}
+        />
+      )}
+
+      {returnOrder && (
+        <ReturnModal
+          order={returnOrder}
+          onClose={() => setReturnOrder(null)}
+          onSubmitted={handleReturnSubmitted}
           getToken={getToken}
         />
       )}

@@ -48,9 +48,12 @@ export default function AdminOffers() {
   async function refresh() {
     try {
       setLoading(true)
-      const [d, o] = await Promise.all([fetchDishes(), fetchOffers(getToken())])
-      setDishes(d)
-      setOffers(o)
+      // allSettled: if offers fail (e.g. login expired) the dishes still load
+      const [d, o] = await Promise.allSettled([fetchDishes(), fetchOffers(getToken())])
+      if (d.status === 'fulfilled') setDishes(d.value)
+      if (o.status === 'fulfilled') setOffers(o.value)
+      const failed = [d, o].find(r => r.status === 'rejected')
+      if (failed) throw failed.reason
     } catch (err) {
       setError(err.message || 'Failed to load data.')
     } finally {

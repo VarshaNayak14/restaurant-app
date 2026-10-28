@@ -22,7 +22,16 @@
 .order-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; box-shadow:var(--shadow-sm); transition:all var(--transition); min-width:0; }
 .order-card:hover { box-shadow:var(--shadow-md); }
 .oc-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:10px; flex-wrap:wrap; }
-.order-id   { font-weight:700; color: black !important; font-size:.95rem; word-break:break-word; }
+.order-id   { font-weight:700; color: var(--text-heading); font-size:.95rem; word-break:break-word; }
+/* status + return badges sit together on the right */
+.oc-badges { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+/* thumbnails + item names */
+.order-items-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
+.order-items-row .order-items-preview { margin-bottom:0; }
+.order-items-names { flex:1; min-width:160px; font-size:.86rem; color:var(--text-mid); line-height:1.5; }
+.order-items-names strong { color:var(--text-heading); font-weight:600; }
+.oc-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.oc-actions .rate-review-btn { flex:1; min-width:160px; }
 .order-date { display:flex; align-items:center; gap:5px; color:var(--text-light); font-size:.78rem; margin-top:4px; flex-wrap:wrap; }
 .order-status { background:rgba(39,174,96,.1); color:#27ae60; font-size:.75rem; font-weight:700; padding:5px 14px; border-radius:99px; white-space:nowrap; flex-shrink:0; }
 .order-items-preview { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
@@ -266,3 +275,6 @@
   .rw-header { margin: -16px -16px 14px; padding: 12px 14px; }
   .rw-photo-banner p { max-width: none; }
 }
+/* ── Bill link on order card ── */
+.oc-bill-link { display:inline-flex; align-items:center; gap:5px; font-size:.82rem; font-weight:600; color:var(--primary); text-decoration:none; }
+.oc-bill-link:hover { text-decoration:underline; }

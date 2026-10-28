@@ -17,9 +17,10 @@ const dishSchema = new mongoose.Schema(
       required: [true, 'Image is required'],
     },
     cat: {
+      // Free text so admin can use any category (e.g. "South Indian", "Momos", "Desserts")
       type: String,
       required: [true, 'Category is required'],
-      enum: ['Starters', 'Main Course', 'Rice & Biryani', 'Breads', 'Desserts', 'Drinks'],
+      trim: true,
     },
     tag: {
       type: String,
@@ -43,13 +44,19 @@ const dishSchema = new mongoose.Schema(
       default: false,
     },
     discount: {
-      // Optional flat ₹ amount cut from price. 0 / empty = no offer on this dish.
       type: Number,
       min: [0, 'Discount cannot be negative'],
       default: 0,
     },
+    isAvailable: {
+      // Lets admin mark a dish "out of stock" without deleting it
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 )
+
+dishSchema.index({ cat: 1 })
 
 module.exports = mongoose.model('Dish', dishSchema)

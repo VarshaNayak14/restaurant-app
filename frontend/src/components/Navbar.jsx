@@ -3,11 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   ShoppingCart, ChevronDown, Menu, X, LogOut, Package, UserCircle,
   Utensils, Flame, Leaf, Coffee, ChefHat, Star, Image, Users,
-  Grid, Award, Clock, MapPin, Phone, Mail, Heart
+  Grid, Award, Clock, MapPin, Phone, Mail, Heart, Hotel, Car, CalendarCheck, Sun, Moon
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { useWishlist } from '../context/WishlistContext.jsx'
+import { useTheme } from '../context/ThemeContext.jsx'
 import { fetchCategories, fetchChefs, fetchGallery, fetchDishes, API_BASE } from '../data/dishes.js'
 import './Navbar.css'
 import logo from "/logo.png"
@@ -26,6 +27,18 @@ const staticMegaData = {
       { title: 'Drinks',         icon: <Coffee size={18} />,   color: '#00BCD4', items: ['Mango Lassi','Rose Sharbat','Masala Chai','Fresh Lime Soda'],       link: '/menu?cat=Drinks' },
     ],
     footer: ['Bestsellers', 'Veg Options', 'Quick Delivery', 'Top Rated'],
+  },
+  // ← NEW: "More" dropdown — Hotels + Cabs
+  More: {
+    header: 'Bookings',
+    viewAll: { to: '/hotels', label: 'View All Hotels →' },
+    cols: 3,
+    grid: [
+      { title: 'Book a Hotel',       icon: <Hotel size={18} />,         color: '#C9952A', items: ['Browse hotels', 'Book rooms', 'Add a cab to your stay'],      link: '/hotels' },
+      { title: 'Book a Cab',         icon: <Car size={18} />,           color: '#00BCD4', items: ['Auto, Mini, Sedan, SUV', 'One way or round trip'],            link: '/cabs' },
+      { title: 'Book a Table + Cab', icon: <CalendarCheck size={18} />, color: '#E63946', items: ['Reserve a table', 'Get a cab to and from the restaurant'],    link: '/contact' },
+    ],
+    footer: ['Hotel Stays', 'Cab Pickup & Drop', 'Round Trips', 'Linked Bookings'],
   },
 }
 
@@ -62,6 +75,7 @@ const navLinks = [
   { to: '/#gallery',     label: 'Gallery',       megaKey: 'Gallery' },
   { to: '/#testimonials',label: 'Testimonials' },
   { to: '/contact',      label: 'Contact' },
+  { to: '#more',         label: 'More',          megaKey: 'More', dropdownOnly: true, activePaths: ['/hotels', '/cabs'] },   // ← NEW: booking dropdown
 ]
 
 export default function Navbar() {
@@ -73,6 +87,7 @@ export default function Navbar() {
   const { user, logout }          = useAuth()
   const { count }                 = useCart()
   const { count: wishCount }      = useWishlist()
+  const { dark, toggle: toggleTheme } = useTheme()   // ← NEW: dark / light switch
   const location                  = useLocation()
   const navigate                  = useNavigate()
   const leaveTimer                = useRef(null)
@@ -216,6 +231,14 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handler)
   }, [userMenuOpen])
 
+  // ← NEW: close the click-opened "More" dropdown when clicking outside it
+  useEffect(() => {
+    if (!activeKey) return
+    const handler = (e) => { if (!e.target.closest('.mega-parent')) setActiveKey(null) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [activeKey])
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -291,6 +314,19 @@ export default function Navbar() {
                 onMouseEnter={() => data && onEnter(l.megaKey)}
                 onMouseLeave={() => data && onLeave()}
               >
+                {l.dropdownOnly ? (
+                  /* ← NEW: "More" only opens the dropdown on click, it does not navigate */
+                  <button
+                    type="button"
+                    className={`nav-link mega-trigger ${l.activePaths.includes(location.pathname) ? 'active' : ''}`}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                    aria-expanded={isOpen}
+                    onClick={() => { clearTimeout(leaveTimer.current); setActiveKey(k => (k === l.megaKey ? null : l.megaKey)) }}
+                  >
+                    {l.label}
+                    <ChevronDown size={13} className={`mega-chevron ${isOpen ? 'open' : ''}`} />
+                  </button>
+                ) : (
                 <Link
                   to={l.to}
                   className={`nav-link ${isActive(l.to) ? 'active' : ''} ${data ? 'mega-trigger' : ''}`}
@@ -298,6 +334,7 @@ export default function Navbar() {
                   {l.label}
                   {data && <ChevronDown size={13} className={`mega-chevron ${isOpen ? 'open' : ''}`} />}
                 </Link>
+                )}
 
                 {data && (
                   <div
@@ -310,7 +347,7 @@ export default function Navbar() {
                         <span>{data.header}</span>
                         <Link to={data.viewAll.to} className="mega-view-all">{data.viewAll.label}</Link>
                       </div>
-                      <div className="mega-grid">
+                      <div className="mega-grid" style={data.cols ? { gridTemplateColumns: `repeat(${data.cols}, 1fr)` } : undefined}>
                         {data.grid.map((card, ci) => renderMegaCard(card, card.title + ci))}
                       </div>
                       <div className="mega-footer">
@@ -326,6 +363,10 @@ export default function Navbar() {
 
         {/* Desktop actions */}
         <div className="nav-actions">
+          <button className="cart-icon-btn theme-toggle-btn" onClick={toggleTheme}
+            aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'} title={dark ? 'Light mode' : 'Dark mode'}>
+            {dark ? <Sun size={19} /> : <Moon size={19} />}
+          </button>
           <Link to="/wishlist" className="cart-icon-btn wishlist-icon-btn" aria-label="Wishlist">
             <Heart size={20} />
             {wishCount > 0 && <span className="cart-dot">{wishCount}</span>}
@@ -351,6 +392,7 @@ export default function Navbar() {
               <div className={`dropdown-menu ${userMenuOpen ? 'dropdown-open' : ''}`}>
                 <Link to="/profile" className="drop-item" onClick={() => setUserMenuOpen(false)}><UserCircle size={15} /> My Profile</Link>
                 <Link to="/profile" className="drop-item" onClick={() => setUserMenuOpen(false)}><Package size={15} /> My Orders</Link>
+                <Link to="/profile?tab=bookings" className="drop-item" onClick={() => setUserMenuOpen(false)}><CalendarCheck size={15} /> My Bookings</Link>
                 <button onClick={() => { setUserMenuOpen(false); handleLogout() }} className="drop-item drop-logout"><LogOut size={15} /> Logout</button>
               </div>
             </div>
@@ -406,10 +448,14 @@ export default function Navbar() {
 
         <Link to="/cart" className="mob-link" onClick={closeMobile}>Cart {count > 0 && `(${count})`}</Link>
         <Link to="/wishlist" className="mob-link" onClick={closeMobile}>❤️ Wishlist {wishCount > 0 && `(${wishCount})`}</Link>
+        <button className="mob-link mob-theme-btn" onClick={toggleTheme}>
+          {dark ? <><Sun size={16} /> Light mode</> : <><Moon size={16} /> Dark mode</>}
+        </button>
 
         {user ? (
           <>
             <Link to="/profile" className="mob-link" onClick={closeMobile}>👤 Profile</Link>
+            <Link to="/profile?tab=bookings" className="mob-link" onClick={closeMobile}>📅 My Bookings</Link>
             <button onClick={handleLogout} className="mob-link mob-logout">Logout</button>
           </>
         ) : (

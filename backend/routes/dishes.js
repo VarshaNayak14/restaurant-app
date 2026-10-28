@@ -4,23 +4,13 @@ const { protect, adminOnly } = require('../middleware/auth')
 
 const router = express.Router()
 
-// Get Dish model safely — works whether or not it was already registered
 function getDish() {
   return mongoose.models.Dish || require('../models/Dish')
 }
-
 function getOffer() {
   return mongoose.models.Offer || require('../models/Offer')
 }
 
-/*
-  Jo bhi Offer admin ne is-waqt ke liye schedule kiya hai (date/time window
-  ke andar aur active=true), uske items se ek map bana dete hain:
-  dishId -> discount. Isse GET /dishes aur GET /dishes/:id dono automatically
-  "live" offer discount dikhayenge — bina Menu/Home/DishDetail me kuch badle.
-  Offer khatam hote hi (endAt nikalte hi) ye map khud-ba-khud khaali ho jata
-  hai, kuch manually revert nahi karna padta.
-*/
 async function getActiveOfferDiscountMap() {
   try {
     const now = new Date()
@@ -42,7 +32,7 @@ async function getActiveOfferDiscountMap() {
 router.get('/', async (req, res) => {
   try {
     const [dishes, offerMap] = await Promise.all([
-      getDish().find().sort({ createdAt: -1 }).lean(),
+      getDish().find({}).sort({ createdAt: -1 }).lean(),
       getActiveOfferDiscountMap(),
     ])
     const merged = dishes.map(d =>
@@ -84,13 +74,15 @@ router.post('/', protect, adminOnly, async (req, res) => {
     if (!name || !price || !image || !cat || !desc) {
       return res.status(400).json({ success: false, error: 'Please fill in name, price, image, category and description.' })
     }
-
     if (discount && Number(discount) >= Number(price)) {
       return res.status(400).json({ success: false, error: 'Discount cannot be equal to or greater than the price.' })
     }
 
     const Dish = getDish()
-    const dish = new Dish({ name, price, image, cat, tag, spice, desc, bestseller, discount: discount || 0 })
+    const dish = new Dish({
+      name, price, image, cat, tag, spice, desc, bestseller,
+      discount: discount || 0,
+    })
     await dish.save()
     res.status(201).json({ success: true, dish })
   } catch (err) {
@@ -104,30 +96,20 @@ router.post('/', protect, adminOnly, async (req, res) => {
 })
 
 /* ─────────────────────────────────────────
-   DELETE /api/dishes/:id  —  Admin only
-───────────────────────────────────────── */
-router.delete('/:id', protect, adminOnly, async (req, res) => {
-  try {
-    const dish = await getDish().findByIdAndDelete(req.params.id)
-    if (!dish) return res.status(404).json({ success: false, error: 'Dish not found.' })
-    res.json({ success: true, message: 'Dish deleted successfully.' })
-  } catch (err) {
-    console.error('Delete dish error:', err)
-    res.status(500).json({ success: false, error: 'Could not delete dish.' })
-  }
-})
-
-/* ─────────────────────────────────────────
    PUT /api/dishes/:id  —  Admin only
 ───────────────────────────────────────── */
 router.put('/:id', protect, adminOnly, async (req, res) => {
   try {
+    const Dish = getDish()
+    const existing = await Dish.findById(req.params.id)
+    if (!existing) return res.status(404).json({ success: false, error: 'Dish not found.' })
+
     const { discount, price } = req.body
     if (discount && price && Number(discount) >= Number(price)) {
       return res.status(400).json({ success: false, error: 'Discount cannot be equal to or greater than the price.' })
     }
-    const dish = await getDish().findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-    if (!dish) return res.status(404).json({ success: false, error: 'Dish not found.' })
+
+    const dish = await Dish.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
     res.json({ success: true, dish })
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -136,6 +118,23 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
     }
     console.error('Update dish error:', err)
     res.status(500).json({ success: false, error: 'Could not update dish.' })
+  }
+})
+
+/* ─────────────────────────────────────────
+   DELETE /api/dishes/:id  —  Admin only
+───────────────────────────────────────── */
+router.delete('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const Dish = getDish()
+    const existing = await Dish.findById(req.params.id)
+    if (!existing) return res.status(404).json({ success: false, error: 'Dish not found.' })
+
+    await Dish.findByIdAndDelete(req.params.id)
+    res.json({ success: true, message: 'Dish deleted successfully.' })
+  } catch (err) {
+    console.error('Delete dish error:', err)
+    res.status(500).json({ success: false, error: 'Could not delete dish.' })
   }
 })
 

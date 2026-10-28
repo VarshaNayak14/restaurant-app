@@ -16,7 +16,7 @@ function sendTokenResponse(user, statusCode, res) {
   const token    = signToken(user._id)
   const userData = {
     id: user._id, name: user.name, email: user.email,
-    role: user.role, orders: user.orders, joined: user.createdAt,
+    role: user.role, permissions: user.permissions || [], orders: user.orders, joined: user.createdAt,
   }
   return res.status(statusCode).json({ success: true, token, user: userData })
 }
@@ -162,7 +162,7 @@ router.get('/me', protect, async (req, res) => {
   const user = req.user
   res.json({
     success: true,
-    user: { id: user._id, name: user.name, email: user.email, role: user.role, orders: user.orders, joined: user.createdAt },
+    user: { id: user._id, name: user.name, email: user.email, role: user.role, permissions: user.permissions || [], orders: user.orders, joined: user.createdAt },
   })
 })
 
@@ -212,7 +212,7 @@ router.post('/forgot-password', async (req, res) => {
     await user.save({ validateBeforeSave: false })
 
     // Build reset URL — frontend will handle this route
-    const resetUrl = `${process.env.FRONTEND_URL || 'https://restaurant-app-snowy-three.vercel.app'}/reset-password/${rawToken}`
+    const resetUrl = `${process.env.FRONTEND_URL || 'restaurant-app-snowy-three.vercel.app'}/reset-password/${rawToken}`
 
     const sent = await sendMail({
       to: user.email,

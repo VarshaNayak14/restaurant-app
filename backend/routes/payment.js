@@ -3,6 +3,7 @@ const crypto   = require('crypto')
 const Order    = require('../models/Order')
 const { protect } = require('../middleware/auth')
 const { resolveCoupon, markCouponUsed } = require('../utils/couponHelper')
+const mailer = require('../utils/mailer')   // ← NEW: bill email
 
 const router = express.Router()
 
@@ -116,6 +117,7 @@ router.post('/razorpay/verify', protect, async (req, res) => {
 
     if (appliedCoupon) await markCouponUsed(appliedCoupon, req.user._id)
 
+    mailer.orderPlaced(order)   // ← NEW: bill to customer + admin alert
     res.status(201).json({ success: true, order })
   } catch (err) {
     console.error('Razorpay verify error:', err)

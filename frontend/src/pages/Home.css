@@ -4,7 +4,9 @@
   padding: 0 40px;
 }
 @media (max-width: 768px) {
-  .page-wrapper .container { padding: 0 20px; }
+  .page-wrapper .container {
+    padding: 0 20px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1153,7 +1155,7 @@
   inset: 40px 40px 40px 0;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 .story-img-main img {
   width: 100%;
@@ -1161,7 +1163,9 @@
   object-fit: cover;
   transition: transform 0.7s ease;
 }
-.story-img-main:hover img { transform: scale(1.05); }
+.story-img-main:hover img {
+  transform: scale(1.05);
+}
 
 /* Shared floating box styles */
 .story-img-float {
@@ -1171,8 +1175,10 @@
   border-radius: 12px;
   overflow: hidden;
   border: 3px solid var(--bg-warm);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
   z-index: 2;
 }
 .story-img-float img {
@@ -1182,7 +1188,7 @@
 }
 .story-img-float:hover {
   transform: translateY(-6px) scale(1.04);
-  box-shadow: 0 20px 48px rgba(201,149,42,0.3);
+  box-shadow: 0 20px 48px rgba(201, 149, 42, 0.3);
 }
 
 /* Top-right corner of main image */
@@ -1292,8 +1298,20 @@
   position: relative;
   margin-top: 48px;
   /* fade edges */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
 }
 .testi-marquee-track {
   display: flex;
@@ -1305,8 +1323,12 @@
   animation-play-state: paused;
 }
 @keyframes marqueeScroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 .testi-card {
   position: relative;
@@ -1842,18 +1864,35 @@
   }
 }
 /* ── Wishlist Heart Button on Home Cards ── */
-.feat-img-wrap { position: relative; }
+.feat-img-wrap {
+  position: relative;
+}
 .card-heart-btn {
-  position: absolute; top: 8px; left: 8px;
-  width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(255,255,255,.92); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #bbb; transition: all .2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 5;
 }
-.card-heart-btn:hover { color: #e63946; transform: scale(1.15); }
-.card-heart-btn.wishlisted { color: #e63946; background: rgba(230,57,70,.1); }
+.card-heart-btn:hover {
+  color: #e63946;
+  transform: scale(1.15);
+}
+.card-heart-btn.wishlisted {
+  color: #e63946;
+  background: rgba(230, 57, 70, 0.1);
+}
 /* ══════════════════ GALLERY TILE ZOOM ICON ══════════════════ */
 .gallery-tile-zoom {
   position: absolute;
@@ -1887,8 +1926,12 @@
   animation: lbFadeIn 0.25s ease;
 }
 @keyframes lbFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .lb-modal {
@@ -1906,8 +1949,14 @@
   animation: lbSlideUp 0.3s ease;
 }
 @keyframes lbSlideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Header */
@@ -1937,7 +1986,9 @@
   justify-content: center;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 .lb-close:hover {
   background: rgba(201, 149, 42, 0.2);
@@ -1974,8 +2025,14 @@
   animation: lbImgIn 0.25s ease;
 }
 @keyframes lbImgIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Arrows */
@@ -1991,7 +2048,10 @@
   justify-content: center;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.15s;
 }
 .lb-arrow:hover {
   background: rgba(201, 149, 42, 0.25);
@@ -2040,7 +2100,9 @@
   background: #111;
   cursor: pointer;
   padding: 0;
-  transition: border-color 0.2s, transform 0.2s;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
 }
 .lb-thumb:hover {
   border-color: rgba(201, 149, 42, 0.5);
@@ -2100,7 +2162,10 @@
   box-sizing: border-box;
   max-width: 100%;
 }
-.offer-banner-section .container { max-width: 100%; overflow-x: hidden; }
+.offer-banner-section .container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 .offer-banner-left {
   flex: 1 1 340px;
@@ -2111,8 +2176,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(230,57,70,0.15);
-  color: #FF6B6B;
+  background: rgba(230, 57, 70, 0.15);
+  color: #ff6b6b;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -2123,8 +2188,13 @@
   animation: offerPulse 1.8s ease-in-out infinite;
 }
 @keyframes offerPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 .offer-banner-title {
   font-size: 1.9rem;
@@ -2138,7 +2208,7 @@
 }
 .offer-banner-sub {
   font-size: 0.92rem;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   max-width: 420px;
   line-height: 1.6;
   margin-bottom: 22px;
@@ -2154,8 +2224,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
   min-width: 54px;
   padding: 8px 6px;
@@ -2169,13 +2239,13 @@
 }
 .offer-count-box small {
   font-size: 0.6rem;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: 3px;
 }
 .offer-count-sep {
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -2208,29 +2278,36 @@
   overflow-y: auto;
   padding-right: 4px;
 }
-.offer-banner-right::-webkit-scrollbar { width: 6px; }
-.offer-banner-right::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 10px; }
+.offer-banner-right::-webkit-scrollbar {
+  width: 6px;
+}
+.offer-banner-right::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+}
 .offer-mini-card {
   position: relative;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   cursor: pointer;
-  transition: transform var(--transition), background var(--transition);
+  transition:
+    transform var(--transition),
+    background var(--transition);
 }
 .offer-mini-card:hover {
   transform: translateY(-4px);
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 .offer-mini-pct {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: #E63946;
+  background: #e63946;
   color: #fff;
   font-size: 0.62rem;
   font-weight: 800;
@@ -2264,7 +2341,7 @@
 }
 .offer-mini-old {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
   text-decoration: line-through;
 }
 .offer-mini-new {
@@ -2275,13 +2352,19 @@
 
 /* Tablet */
 @media (max-width: 860px) {
-  .offer-banner { padding: 30px 26px; }
-  .offer-banner-title { font-size: 1.55rem; }
+  .offer-banner {
+    padding: 30px 26px;
+  }
+  .offer-banner-title {
+    font-size: 1.55rem;
+  }
 }
 
 /* Mobile */
 @media (max-width: 560px) {
-  .offer-banner-section { padding: 22px 0; }
+  .offer-banner-section {
+    padding: 22px 0;
+  }
   .offer-banner {
     flex-direction: column;
     align-items: stretch;
@@ -2289,46 +2372,220 @@
     border-radius: var(--radius);
     gap: 22px;
   }
-  .offer-banner-left { flex-basis: auto; }
-  .offer-banner-title { font-size: 1.3rem; }
-  .offer-banner-sub { max-width: none; }
-  .offer-countdown { flex-wrap: wrap; }
-  .offer-count-box { min-width: 46px; padding: 7px 5px; }
-  .offer-count-box span { font-size: 1.05rem; }
-  .offer-banner-cta { width: 100%; justify-content: center; }
+  .offer-banner-left {
+    flex-basis: auto;
+  }
+  .offer-banner-title {
+    font-size: 1.3rem;
+  }
+  .offer-banner-sub {
+    max-width: none;
+  }
+  .offer-countdown {
+    flex-wrap: wrap;
+  }
+  .offer-count-box {
+    min-width: 46px;
+    padding: 7px 5px;
+  }
+  .offer-count-box span {
+    font-size: 1.05rem;
+  }
+  .offer-banner-cta {
+    width: 100%;
+    justify-content: center;
+  }
   .offer-banner-right {
     flex-basis: auto;
     grid-template-columns: repeat(2, 1fr);
     max-height: none;
     overflow-y: visible;
   }
-  .offer-mini-img { height: 68px; }
+  .offer-mini-img {
+    height: 68px;
+  }
 }
 
 /* Small mobile (e.g. iPhone SE / narrow devtools widths) */
 @media (max-width: 400px) {
-  .offer-banner-section { padding: 16px 0; }
-  .offer-banner { padding: 18px 14px; gap: 18px; }
-  .offer-banner-eyebrow { font-size: 0.65rem; padding: 5px 11px; margin-bottom: 10px; }
-  .offer-banner-title { font-size: 1.1rem; margin-bottom: 8px; }
-  .offer-banner-sub { font-size: 0.82rem; margin-bottom: 16px; }
-  .offer-countdown { gap: 7px; margin-bottom: 18px; }
-  .offer-count-box { min-width: 40px; padding: 6px 4px; border-radius: 8px; }
-  .offer-count-box span { font-size: 0.95rem; }
-  .offer-count-box small { font-size: 0.55rem; }
-  .offer-count-sep { font-size: 0.95rem; }
-  .offer-banner-cta { padding: 10px 20px; font-size: 0.85rem; }
-  .offer-banner-right { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .offer-mini-card { padding: 8px; gap: 6px; }
-  .offer-mini-img { height: 60px; }
-  .offer-mini-name { font-size: 0.74rem; }
-  .offer-mini-old { font-size: 0.64rem; }
-  .offer-mini-new { font-size: 0.84rem; }
-  .offer-mini-pct { font-size: 0.56rem; padding: 2px 6px; }
+  .offer-banner-section {
+    padding: 16px 0;
+  }
+  .offer-banner {
+    padding: 18px 14px;
+    gap: 18px;
+  }
+  .offer-banner-eyebrow {
+    font-size: 0.65rem;
+    padding: 5px 11px;
+    margin-bottom: 10px;
+  }
+  .offer-banner-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  .offer-banner-sub {
+    font-size: 0.82rem;
+    margin-bottom: 16px;
+  }
+  .offer-countdown {
+    gap: 7px;
+    margin-bottom: 18px;
+  }
+  .offer-count-box {
+    min-width: 40px;
+    padding: 6px 4px;
+    border-radius: 8px;
+  }
+  .offer-count-box span {
+    font-size: 0.95rem;
+  }
+  .offer-count-box small {
+    font-size: 0.55rem;
+  }
+  .offer-count-sep {
+    font-size: 0.95rem;
+  }
+  .offer-banner-cta {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+  .offer-banner-right {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .offer-mini-card {
+    padding: 8px;
+    gap: 6px;
+  }
+  .offer-mini-img {
+    height: 60px;
+  }
+  .offer-mini-name {
+    font-size: 0.74rem;
+  }
+  .offer-mini-old {
+    font-size: 0.64rem;
+  }
+  .offer-mini-new {
+    font-size: 0.84rem;
+  }
+  .offer-mini-pct {
+    font-size: 0.56rem;
+    padding: 2px 6px;
+  }
 }
 
 /* Very small mobile — stack offer cards into a single column so nothing gets cramped */
 @media (max-width: 340px) {
-  .offer-banner-right { grid-template-columns: 1fr; }
-  .offer-mini-img { height: 90px; }
+  .offer-banner-right {
+    grid-template-columns: 1fr;
+  }
+  .offer-mini-img {
+    height: 90px;
+  }
+}
+/* ── Hero slider (4 slides, same layout) ── */
+.h2-slide-anim {
+  animation: h2SlideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.h2-right.h2-slide-anim {
+  animation-delay: 0.08s;
+}
+@keyframes h2SlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.h2-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+}
+.h2-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 20px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.28);
+  transition: all 0.3s ease;
+}
+.h2-dot:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+.h2-dot.active {
+  width: 30px;
+  background: var(--primary);
+}
+@media (prefers-reduced-motion: reduce) {
+  .h2-slide-anim {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero2 {
+    padding-bottom: 56px;
+  }
+  .h2-dots {
+    bottom: 18px;
+  }
+}
+
+/* Hotels & Cabs on Home */
+.hc-loc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.83rem;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+.hc-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hc-unit {
+  color: var(--text-light);
+  font-size: 0.78rem;
+}
+.hc-cabs {
+  padding-top: 0;
+}
+.hc-cab-card .feat-img-wrap {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.14), transparent);
+}
+.hc-cab-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold, #c9a227);
+  z-index: 0;
+}
+.hc-cab-card .feat-img {
+  position: relative;
+  z-index: 1;
+}
+.hc-book {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--gold, #c9a227);
 }

@@ -1,7 +1,8 @@
 const express  = require('express')
 const Order    = require('../models/Order')
-const { protect, adminOnly } = require('../middleware/auth')
+const { protect, adminOnly, hasPermission } = require('../middleware/auth')
 const { resolveCoupon, markCouponUsed } = require('../utils/couponHelper')
+const mailer = require('../utils/mailer')   // ← NEW: bill email
 
 const router = express.Router()
 
@@ -57,6 +58,7 @@ router.post('/', protect, async (req, res) => {
 
     if (appliedCoupon) await markCouponUsed(appliedCoupon, req.user._id)
 
+    mailer.orderPlaced(order)   // ← NEW: bill to customer + admin alert
     res.status(201).json({ success: true, order })
   } catch (err) {
     console.error('Place order error:', err)
@@ -87,7 +89,7 @@ router.get('/:id', protect, async (req, res) => {
     if (!order) return res.status(404).json({ success: false, error: 'Order not found.' })
 
     const isOwner = order.user.toString() === req.user._id.toString()
-    const isAdmin = req.user.role === 'admin'
+    const isAdmin = hasPermission(req.user, 'orders', 'bills', 'dashboard')
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ success: false, error: 'Access denied.' })
     }
@@ -95,6 +97,50 @@ router.get('/:id', protect, async (req, res) => {
     res.json({ success: true, order })
   } catch (err) {
     res.status(500).json({ success: false, error: 'Could not fetch order.' })
+  }
+})
+
+/**
+ * POST /api/orders/:id/return
+ * User requests a return/refund for a delivered order.
+ * Body: { reason, items } — items is an array of item ids being returned (optional -> all items)
+ */
+router.post('/:id/return', protect, async (req, res) => {
+  try {
+    const { reason, items } = req.body
+    const order = await Order.findById(req.params.id)
+    if (!order) return res.status(404).json({ success: false, error: 'Order not found.' })
+
+    const isOwner = order.user.toString() === req.user._id.toString()
+    if (!isOwner) return res.status(403).json({ success: false, error: 'Access denied.' })
+
+    if (order.status !== 'delivered') {
+      return res.status(400).json({ success: false, error: 'Sirf delivered orders hi return kiye ja sakte hain.' })
+    }
+    if (order.returnStatus && order.returnStatus !== 'none' && order.returnStatus !== 'rejected') {
+      return res.status(400).json({ success: false, error: 'Is order ke liye pehle se hi return request maujood hai.' })
+    }
+    if (!reason || !reason.trim()) {
+      return res.status(400).json({ success: false, error: 'Return ka reason dena zaroori hai.' })
+    }
+
+    const deliveredAt = order.updatedAt || order.createdAt
+    const daysSince = (Date.now() - new Date(deliveredAt).getTime()) / (1000 * 60 * 60 * 24)
+    if (daysSince > 7) {
+      return res.status(400).json({ success: false, error: 'Return window (7 din) khatam ho chuki hai.' })
+    }
+
+    order.returnStatus = 'requested'
+    order.returnReason = reason.trim()
+    order.returnItems = Array.isArray(items) && items.length ? items : order.items.map(i => i.id)
+    order.returnRequestedAt = new Date()
+    order.returnAdminNote = null
+    await order.save()
+
+    res.json({ success: true, order })
+  } catch (err) {
+    console.error('Return request error:', err)
+    res.status(500).json({ success: false, error: 'Return request save nahi ho saki.' })
   }
 })
 
@@ -116,7 +162,7 @@ router.get('/', protect, adminOnly, async (req, res) => {
     const filter = {}
     if (req.query.status) filter.status = req.query.status
     if (req.query.search) {
-      const rx = new RegExp(req.query.search, 'i')
+      const rx = new RegExp(String(req.query.search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       filter.$or = [{ userName: rx }, { userEmail: rx }, { orderId: rx }]
     }
 
@@ -155,6 +201,37 @@ router.patch('/:id/status', protect, adminOnly, async (req, res) => {
     res.json({ success: true, order })
   } catch (err) {
     res.status(500).json({ success: false, error: 'Could not update status.' })
+  }
+})
+
+/**
+ * PATCH /api/orders/:id/return-status
+ * Admin: approve / reject / complete a user's return request
+ * Body: { returnStatus: 'approved' | 'rejected' | 'completed', adminNote }
+ */
+router.patch('/:id/return-status', protect, adminOnly, async (req, res) => {
+  try {
+    const { returnStatus, adminNote } = req.body
+    const valid = ['approved', 'rejected', 'completed']
+    if (!valid.includes(returnStatus)) {
+      return res.status(400).json({ success: false, error: 'Invalid return status value.' })
+    }
+
+    const order = await Order.findById(req.params.id)
+    if (!order) return res.status(404).json({ success: false, error: 'Order not found.' })
+    if (order.returnStatus === 'none') {
+      return res.status(400).json({ success: false, error: 'Is order ke liye koi return request nahi hai.' })
+    }
+
+    order.returnStatus = returnStatus
+    order.returnAdminNote = adminNote || null
+    order.returnProcessedAt = new Date()
+    await order.save()
+
+    res.json({ success: true, order })
+  } catch (err) {
+    console.error('Return status update error:', err)
+    res.status(500).json({ success: false, error: 'Return status update nahi ho saka.' })
   }
 })
 
